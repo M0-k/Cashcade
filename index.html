@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashcade</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="main.js" defer></script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/> 
+</head>
+<body class="dark-theme">
+    <header>
+        <img src="https://cdn.prod.website-files.com/66671b800c367e1fd46c54bc/673e45df47a9cd7d8a7f6a81_airtable-9829e33481e91843783765feca201e62-cxjg5dbw.avif" 
+             alt="Cashcade Logo" 
+             style="height:64px; margin-bottom: 1rem;">
+        <h1>Cashcade</h1>
+        <div id="wallet" style="color:#f7c873; font-weight:bold; margin-top:0.5rem;">Wallet: $<span id="walletAmount">1000</span></div>
+    </header>
+    <main>
+        <section class="counters">
+            <div class="counter-card">
+                <h2>Jackpot</h2>
+                <div class="counter" id="jackpotCounter">0</div>
+            </div>
+            <div class="counter-card">
+                <h2>RtP</h2>
+                <div class="counter" id="luckyCounter">0</div>
+            </div>
+            <div class="counter-card">
+                <h2>People Bankrupted</h2>
+                <div class="counter" id="quickCounter">0</div>
+            </div>
+        </section>
+        <br>
+        <br>
+        <a href="blackjack.html">Play BlackJack</a>
+    </main>
+    <footer>
+        <p>&copy; 2025 Cashcade. Gamble responsibly.</p>
+    </footer>
+    <script>
+    // Wallet logic for all pages
+    (function() {
+        function getWallet() {
+            let val = localStorage.getItem('cashcade_wallet');
+            if (val === null) {
+                localStorage.setItem('cashcade_wallet', '1000');
+                return 1000;
+            }
+            return parseInt(val, 10);
+        }
+        function setWallet(val) {
+            localStorage.setItem('cashcade_wallet', val);
+            var el = document.getElementById('walletAmount');
+            if (el) el.textContent = val;
+        }
+        // Show wallet on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setWallet(getWallet());
+        });
+        // Expose globally for game pages to update
+        window.CashcadeWallet = { get: getWallet, set: setWallet };
+    })();
+    </script>
+</body>
+</html>

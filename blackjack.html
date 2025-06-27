@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack | Cashcade</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        body { text-align: center; }
+        .bj-table {
+            background: #232a4d;
+            border-radius: 1rem;
+            margin: 2rem auto;
+            padding: 2rem 1rem 2.5rem 1rem;
+            width: 520px;
+            min-height: 520px;
+            max-width: 520px;
+            max-height: 650px;
+            box-shadow: 0 4px 24px #0004;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Add static outline */
+            outline: 3px solid #f7c873;
+            box-sizing: border-box;
+            /* Prevent resizing on content change */
+            overflow: hidden;
+        }
+        .cards { font-size: 2.2rem; margin: 1rem 0; }
+        .status { margin: 1rem 0; color: #f7c873; font-size: 1.2rem; min-height: 2.2em; }
+        .bj-btn {
+            background: linear-gradient(90deg, #ffb300 0%, #ff6f00 100%);
+            color: #181a20;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            transition: background 0.2s;
+            min-width: 90px;
+        }
+        .bj-btn:hover {
+            background: linear-gradient(90deg, #ff6f00 0%, #ffb300 100%);
+        }
+        .bet-controls {
+            margin: 1rem 0;
+        }
+        .money {
+            color: #f7c873;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .split-hand {
+            border: 1px dashed #f7c873;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            padding: 0.5rem;
+        }
+        #wallet-banner {
+            position: absolute;
+            top: 16px;
+            left: 32px;
+            background: #181c2f;
+            color: #f7c873;
+            font-weight: bold;
+            border-radius: 1.5em;
+            padding: 0.4em 1.2em;
+            box-shadow: 0 2px 8px #0004;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+        .bj-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5em;
+            margin-top: 1.5em;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 1.5em;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <header style="position: relative; min-height: 90px;">
+        <img src="logo.png" 
+             alt="Cashcade Logo" 
+             style="height:200px; margin-bottom: 1rem;">
+        <h3>Blackjack</h3>
+        <div id="wallet-banner">
+            $teaks: <span id="walletAmount">1000</span>
+            <button id="depositBtn" style="margin-left:1em; background:#232a4d; color:#f7c873; border:none; border-radius:0.7em; padding:0.2em 1em; font-weight:bold; cursor:pointer;">Deposit</button>
+        </div>
+    </header>
+    <main>
+        <div class="bj-table">
+            <span class="money" id="moneyDisplay"></span>
+            <div class="bet-controls" id="betControls">
+                <label for="betInput">Bet:</label>
+                <input type="number" id="betInput" min="1" value="10" style="width:70px;">
+                <button class="bj-btn" id="betBtn">Place Bet</button>
+            </div>
+            <div>
+                <strong>Dealer:</strong>
+                <div class="cards" id="dealerCards"></div>
+                <div id="dealerScore"></div>
+            </div>
+            <hr>
+            <div id="playerHandsContainer">
+                <div>
+                    <strong>You:</strong>
+                    <div class="cards" id="playerCards"></div>
+                    <div id="playerScore"></div>
+                </div>
+            </div>
+            <div class="status" id="status"></div>
+            <div class="bj-buttons">
+                <button class="bj-btn" id="hitBtn" style="display:none;">Hit</button>
+                <button class="bj-btn" id="standBtn" style="display:none;">Stand</button>
+                <button class="bj-btn" id="splitBtn" style="display:none;">Split</button>
+                <button class="bj-btn" id="restartBtn" style="display:none;">Restart</button>
+            </div>
+        </div>
+    </main>
+    <script>
+    (function() {
+        function getWallet() {
+            let val = localStorage.getItem('cashcade_wallet');
+            if (val === null) {
+                localStorage.setItem('cashcade_wallet', '1000');
+                return 1000;
+            }
+            return parseInt(val, 10);
+        }
+        function setWallet(val) {
+            localStorage.setItem('cashcade_wallet', val);
+            var el = document.getElementById('walletAmount');
+            if (el) el.textContent = val;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setWallet(getWallet());
+            // Deposit button logic
+            const depositBtn = document.getElementById('depositBtn');
+            if (depositBtn) {
+                depositBtn.onclick = function() {
+                    let amount = prompt("How much would you like to deposit?", "100");
+                    amount = parseInt(amount, 10);
+                    if (!isNaN(amount) && amount > 0) {
+                        setWallet(getWallet() + amount);
+                    }
+                };
+            }
+        });
+        window.CashcadeWallet = { get: getWallet, set: setWallet };
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const suits = ['♠', '♥', '♦', '♣'];
+        const ranks = [
+            {r:'A',v:11}, {r:'2',v:2}, {r:'3',v:3}, {r:'4',v:4}, {r:'5',v:5}, {r:'6',v:6},
+            {r:'7',v:7}, {r:'8',v:8}, {r:'9',v:9}, {r:'10',v:10}, {r:'J',v:10}, {r:'Q',v:10}, {r:'K',v:10}
+        ];
+        let deck, dealer, gameOver, playerStands;
+        let playerHands, currentHand, bets;
+
+        const dealerCards = document.getElementById('dealerCards');
+        const dealerScore = document.getElementById('dealerScore');
+        const playerHandsContainer = document.getElementById('playerHandsContainer');
+        const status = document.getElementById('status');
+        const hitBtn = document.getElementById('hitBtn');
+        const standBtn = document.getElementById('standBtn');
+        const splitBtn = document.getElementById('splitBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const betBtn = document.getElementById('betBtn');
+        const betInput = document.getElementById('betInput');
+        const betControls = document.getElementById('betControls');
+        const moneyDisplay = document.getElementById('moneyDisplay');
+        const walletAmount = document.getElementById('walletAmount');
+
+        function createDeck() {
+            let d = [];
+            for (let s of suits) {
+                for (let r of ranks) {
+                    d.push({r: r.r, v: r.v, s: s});
+                }
+            }
+            for (let i = d.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [d[i], d[j]] = [d[j], d[i]];
+            }
+            return d;
+        }
+
+        function handValue(hand) {
+            let val = hand.reduce((a, c) => a + c.v, 0);
+            let aces = hand.filter(c => c.r === 'A').length;
+            while (val > 21 && aces > 0) {
+                val -= 10;
+                aces--;
+            }
+            return val;
+        }
+
+        function render() {
+            dealerCards.innerHTML = dealer.map((c,i) =>
+                (gameOver || i>0 || playerStands)
+                    ? `<span>${c.r}${c.s}</span>`
+                    : `<span>🂠</span>`
+            ).join(' ');
+            dealerScore.textContent = (gameOver || playerStands)
+                ? `Score: ${handValue(dealer)}`
+                : `Score: ?`;
+
+            // Render player hands (for split)
+            playerHandsContainer.innerHTML = '';
+            playerHands.forEach((hand, idx) => {
+                const isActive = idx === currentHand;
+                const div = document.createElement('div');
+                div.className = playerHands.length > 1 ? 'split-hand' : '';
+                div.innerHTML = `<strong>You${playerHands.length > 1 ? ' (Hand ' + (idx+1) + ')' : ''}:</strong>
+                    <div class="cards">${hand.map(c => `<span>${c.r}${c.s}</span>`).join(' ')}</div>
+                    <div>Score: ${handValue(hand)}${isActive ? ' <span style="color:#f7c873;">(Active)</span>' : ''}</div>
+                    <div>Bet: ${bets[idx]}</div>`;
+                playerHandsContainer.appendChild(div);
+            });
+
+            // Update both displays
+            const money = CashcadeWallet.get();
+            moneyDisplay.textContent = `Money: $${money}`;
+            if (walletAmount) walletAmount.textContent = money;
+        }
+
+        function checkGame() {
+            let allDone = playerHands.every((hand, idx) => handValue(hand) > 21 || playerStands);
+            if (allDone) {
+                dealerTurn();
+            }
+        }
+
+        function dealerTurn() {
+            playerStands = true;
+            render();
+            let dVal = handValue(dealer);
+            let loop = function() {
+                dVal = handValue(dealer);
+                if (dVal < 17) {
+                    dealer.push(deck.pop());
+                    render();
+                    setTimeout(loop, 700);
+                } else {
+                    finishGame();
+                }
+            };
+            setTimeout(loop, 700);
+        }
+
+        function finishGame() {
+            let dVal = handValue(dealer);
+            let msg = '';
+            let money = CashcadeWallet.get();
+            playerHands.forEach((hand, idx) => {
+                let pVal = handValue(hand);
+                if (pVal > 21) {
+                    msg += `Hand ${idx+1}: Bust! Lost $${bets[idx]}.<br>`;
+                    // No money added
+                } else if (dVal > 21 || pVal > dVal) {
+                    msg += `Hand ${idx+1}: You win $${bets[idx]}!<br>`;
+                    money += bets[idx]*2;
+                } else if (pVal < dVal) {
+                    msg += `Hand ${idx+1}: Dealer wins. Lost $${bets[idx]}.<br>`;
+                    // No money added
+                } else {
+                    msg += `Hand ${idx+1}: Push. Bet returned.<br>`;
+                    money += bets[idx];
+                }
+            });
+            CashcadeWallet.set(money);
+            status.innerHTML = msg;
+            hitBtn.style.display = standBtn.style.display = splitBtn.style.display = "none";
+            restartBtn.style.display = "";
+            betControls.style.display = "";
+            render();
+        }
+
+        function startGame() {
+            let money = CashcadeWallet.get();
+            if (money < 1) {
+                status.textContent = "You're out of money!";
+                hitBtn.style.display = standBtn.style.display = splitBtn.style.display = "none";
+                restartBtn.style.display = "";
+                betControls.style.display = "none";
+                render();
+                return;
+            }
+            let bet = parseInt(betInput.value, 10);
+            if (isNaN(bet) || bet < 1 || bet > money) {
+                status.textContent = "Invalid bet.";
+                return;
+            }
+            CashcadeWallet.set(money - bet);
+            deck = createDeck();
+            playerHands = [[deck.pop(), deck.pop()]];
+            bets = [bet];
+            currentHand = 0;
+            dealer = [deck.pop(), deck.pop()];
+            gameOver = false;
+            playerStands = false;
+            status.textContent = "";
+            hitBtn.style.display = standBtn.style.display = "";
+            splitBtn.style.display = canSplit() ? "" : "none";
+            restartBtn.style.display = "none";
+            betControls.style.display = "none";
+            render();
+        }
+
+        function canSplit() {
+            if (playerHands.length > 1) return false;
+            let hand = playerHands[0];
+            let money = CashcadeWallet.get();
+            return hand.length === 2 && hand[0].r === hand[1].r && money >= bets[0];
+        }
+
+        hitBtn.onclick = function() {
+            if (gameOver) return;
+            let hand = playerHands[currentHand];
+            hand.push(deck.pop());
+            splitBtn.style.display = "none";
+            render();
+            if (handValue(hand) > 21) {
+                // Move to next hand or finish
+                if (currentHand < playerHands.length - 1) {
+                    currentHand++;
+                    splitBtn.style.display = canSplit() ? "" : "none";
+                    render();
+                } else {
+                    playerStands = true;
+                    checkGame();
+                }
+            }
+        };
+
+        standBtn.onclick = function() {
+            if (gameOver) return;
+            if (currentHand < playerHands.length - 1) {
+                currentHand++;
+                splitBtn.style.display = canSplit() ? "" : "none";
+                render();
+            } else {
+                playerStands = true;
+                checkGame();
+            }
+        };
+
+        splitBtn.onclick = function() {
+            if (!canSplit()) return;
+            let hand = playerHands[0];
+            let bet = bets[0];
+            let money = CashcadeWallet.get();
+            if (money < bet) {
+                status.textContent = "Not enough money to split!";
+                return;
+            }
+            CashcadeWallet.set(money - bet);
+            playerHands = [
+                [hand[0], deck.pop()],
+                [hand[1], deck.pop()]
+            ];
+            bets = [bet, bet];
+            currentHand = 0;
+            splitBtn.style.display = canSplit() ? "" : "none";
+            render();
+        };
+
+        restartBtn.onclick = startGame;
+        betBtn.onclick = startGame;
+
+        render();
+    });
+    </script>
+</body>
+</html>

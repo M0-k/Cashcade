@@ -1,0 +1,59 @@
+body.dark-theme {
+    background: #181c2f; /* deep blue */
+    color: #f7c873;      /* gold/yellow for text */
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    text-align: center;
+    padding: 2rem 1rem 1rem 1rem;
+}
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.counters {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+.counter-card {
+    background: linear-gradient(135deg, #232a4d 60%, #3b2063 100%); /* blue to purple */
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px #0004;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    min-width: 180px;
+}
+.counter-card h2 {
+    margin-bottom: 1rem;
+    color: #f7c873; /* gold/yellow */
+    letter-spacing: 1px;
+}
+.counter {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #f7c873; /* gold/yellow */
+    background: #232a4d;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0;
+    box-shadow: 0 2px 8px #0002;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    color: #a3aed6;
+    font-size: 0.95rem;
+    background: #181c2f;
+    border-top: 1px solid #232a4d;
+}
+h2 {
+    color: #f7c873;
+}

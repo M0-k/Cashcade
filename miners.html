@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Miner's Descent | Cashcade</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        body { text-align: center; }
+        .miner-table {
+            background: #232a4d;
+            border-radius: 1rem;
+            margin: 2rem auto;
+            padding: 2rem 1rem;
+            max-width: 420px;
+            box-shadow: 0 4px 24px #0004;
+        }
+        .tiles-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.2em;
+            margin: 1em 0;
+        }
+        .tile-btn {
+            width: 60px;
+            height: 60px;
+            background: #181c2f;
+            border: 2px solid #f7c873;
+            border-radius: 1em;
+            font-size: 2em;
+            color: #f7c873;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .tile-btn:disabled {
+            background: #33384d;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .miner-status {
+            color: #f7c873;
+            font-size: 1.2em;
+            margin: 1em 0 0.5em 0;
+            min-height: 2em;
+        }
+        #wallet-banner {
+            position: absolute;
+            top: 16px;
+            left: 32px;
+            background: #181c2f;
+            color: #f7c873;
+            font-weight: bold;
+            border-radius: 1.5em;
+            padding: 0.4em 1.2em;
+            box-shadow: 0 2px 8px #0004;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+        .miner-btns {
+            margin-top: 1.5em;
+        }
+        .miner-btns button {
+            margin: 0 0.5em;
+        }
+        .tiles-row.inactive .tile-btn {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .tiles-row.active .tile-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <header style="position: relative; min-height: 90px;">
+        <img src="logo.png" 
+             alt="Cashcade Logo" 
+             style="height:64px; margin-bottom: 1rem;">
+        <h1>Miner's Descent</h1>
+        <div id="wallet-banner">
+            $teaks: <span id="walletAmount">1000.00</span>
+            <button id="depositBtn" style="margin-left:1em; background:#232a4d; color:#f7c873; border:none; border-radius:0.7em; padding:0.2em 1em; font-weight:bold; cursor:pointer;">Deposit</button>
+        </div>
+    </header>
+    <main>
+        <div class="miner-table">
+            <div style="display:flex; justify-content: flex-end;">
+                <button class="bj-btn" id="restartBtn" style="display:none; margin-bottom:1em;">Restart</button>
+            </div>
+            <div class="miner-status" id="minerStatus"></div>
+            <div id="minerLevel"></div>
+            <div id="tilesContainer"></div>
+            <div class="miner-btns">
+                <button class="bj-btn" id="cashoutBtn" style="display:none;">Cash Out</button>
+            </div>
+            <div class="bet-controls" id="betControls">
+                <label for="betInput">Bet:</label>
+                <input type="number" id="betInput" min="1" value="10" style="width:70px;">
+                <button class="bj-btn" id="betBtn">Start</button>
+            </div>
+        </div>
+    </main>
+    <script>
+    // Update wallet logic for decimals and $teaks display
+    (function() {
+        function getWallet() {
+            let val = localStorage.getItem('cashcade_wallet');
+            if (val === null) {
+                localStorage.setItem('cashcade_wallet', '1000');
+                return 1000;
+            }
+            return parseFloat(val);
+        }
+        function setWallet(val) {
+            val = Math.round(val * 100) / 100; // round to 2 decimals
+            localStorage.setItem('cashcade_wallet', val);
+            var el = document.getElementById('walletAmount');
+            if (el) el.textContent = val.toFixed(2);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setWallet(getWallet());
+            // Deposit button logic
+            const depositBtn = document.getElementById('depositBtn');
+            if (depositBtn) {
+                depositBtn.onclick = function() {
+                    let amount = prompt("How much would you like to deposit?", "100");
+                    amount = parseFloat(amount);
+                    if (!isNaN(amount) && amount > 0) {
+                        setWallet(getWallet() + amount);
+                    }
+                };
+            }
+        });
+        window.CashcadeWallet = { get: getWallet, set: setWallet };
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tilesPerRow = 4;
+        const maxLevels = 12;
+        const loseEmoji = "💣";
+        const winEmoji = "⛏️";
+        const cashEmoji = "💰";
+        const boostEmoji = "💎"; // Use diamond emoji
+        let bet = 0, level = 0, path = [], lost = false, gameStarted = false, winnings = 0, revealed = [], boosts = [];
+        let diamondUsed = []; // array to track if diamond was already used per level
+
+        const minerStatus = document.getElementById('minerStatus');
+        const minerLevel = document.getElementById('minerLevel');
+        const tilesContainer = document.getElementById('tilesContainer');
+        const cashoutBtn = document.getElementById('cashoutBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const betBtn = document.getElementById('betBtn');
+        const betInput = document.getElementById('betInput');
+        const betControls = document.getElementById('betControls');
+        const walletAmount = document.getElementById('walletAmount');
+
+        function updateWalletDisplay() {
+            if (walletAmount) walletAmount.textContent = CashcadeWallet.get();
+        }
+
+        function startGame() {
+            let wallet = CashcadeWallet.get();
+            bet = parseInt(betInput.value, 10);
+            if (isNaN(bet) || bet < 1 || bet > wallet) {
+                minerStatus.textContent = "Invalid bet.";
+                return;
+            }
+            CashcadeWallet.set(wallet - bet);
+            updateWalletDisplay();
+            level = 0;
+            path = [];
+            revealed = [];
+            boosts = [];
+            lost = false;
+            gameStarted = true;
+            winnings = bet;
+            betControls.style.display = "none";
+            cashoutBtn.style.display = "";
+            restartBtn.style.display = "none";
+            minerStatus.textContent = "Pick a tile to descend!";
+            diamondUsed = [];
+            for (let l = 0; l < maxLevels; l++) diamondUsed[l] = false;
+            // Pre-generate all bomb positions and boosts
+            for (let l = 0; l < maxLevels; l++) {
+                // Last 3 levels: 2 bombs
+                if (l >= maxLevels - 3) {
+                    let bomb1 = Math.floor(Math.random() * tilesPerRow);
+                    let bomb2;
+                    do {
+                        bomb2 = Math.floor(Math.random() * tilesPerRow);
+                    } while (bomb2 === bomb1);
+                    path[l] = [bomb1, bomb2];
+                } else {
+                    path[l] = [Math.floor(Math.random() * tilesPerRow)];
+                }
+                // Boosts for levels 7,8,9 (index 6,7,8)
+                if (l >= 6 && l <= 8) {
+                    let boost;
+                    do {
+                        boost = Math.floor(Math.random() * tilesPerRow);
+                    } while (path[l].includes(boost));
+                    boosts[l] = boost;
+                } else {
+                    boosts[l] = null;
+                }
+                revealed[l] = null;
+            }
+            renderTiles();
+        }
+
+        function renderTiles() {
+            minerLevel.textContent = `Level: ${level + 1} / ${maxLevels}`;
+            tilesContainer.innerHTML = '';
+            for (let l = 0; l < maxLevels; l++) {
+                const row = document.createElement('div');
+                row.className = "tiles-row" + (l === level && gameStarted && !lost ? " active" : " inactive");
+                for (let i = 0; i < tilesPerRow; i++) {
+                    let btn = document.createElement('button');
+                    btn.className = "tile-btn";
+                    // Show revealed state if already picked
+                    if (revealed[l] !== null) {
+                        if (l === level && boosts[l] !== null && revealed[l] === boosts[l]) {
+                            // Only show diamond if boost was picked this round
+                            btn.textContent = (i === boosts[l]) ? boostEmoji : " ";
+                            btn.style.background = (i === boosts[l]) ? "#3af" : "#181c2f";
+                        } else if (path[l].includes(i)) {
+                            btn.textContent = loseEmoji;
+                            btn.style.background = "#a33";
+                        } else if (boosts[l] === i && !diamondUsed[l]) {
+                            btn.textContent = boostEmoji;
+                            btn.style.background = "#3af";
+                        } else {
+                            btn.textContent = winEmoji;
+                            btn.style.background = "#232";
+                            btn.disabled = true;
+                        }
+                        if (i === revealed[l]) btn.style.outline = "3px solid #f7c873";
+                    } else {
+                        btn.textContent = "";
+                        btn.disabled = !(l === level && gameStarted && !lost);
+                        // Prevent picking the diamond again after it disappears
+                        if (boosts[l] === i && diamondUsed[l]) btn.disabled = true;
+                        btn.onclick = function() { pickTile(l, i); };
+                    }
+                    row.appendChild(btn);
+                }
+                tilesContainer.appendChild(row);
+            }
+        }
+
+        function pickTile(l, idx) {
+            if (lost || !gameStarted || l !== level) return;
+            let isBomb = path[l].includes(idx);
+            let isBoost = boosts[l] === idx;
+            if (isBomb) {
+                revealed[l] = idx;
+                lost = true;
+                minerStatus.innerHTML = `<span style="color:#ff6f00;">💣 You hit a bomb! Lost $${bet}.</span>`;
+                cashoutBtn.style.display = "none";
+                restartBtn.style.display = "";
+                gameStarted = false;
+                renderTiles();
+                updateWalletDisplay();
+                return;
+            } else if (isBoost) {
+                revealed[l] = idx;
+                winnings = Math.round(winnings * 1.24 * 100) / 100;
+                minerStatus.innerHTML = `<span style="color:#f7c873;">${boostEmoji} Diamond! Winnings increased to $${winnings}. Pick again!</span>`;
+                diamondUsed[l] = true;
+                renderTiles();
+                updateWalletDisplay();
+                // After a short delay, hide the diamond and allow another pick on this level
+                setTimeout(() => {
+                    revealed[l] = null;
+                    renderTiles();
+                }, 900);
+                return;
+            } else {
+                revealed[l] = idx;
+                // Bottom 3 levels: multiply by 1.5, others by 1.24
+                if (level >= maxLevels - 3) {
+                    winnings = Math.floor(winnings * 1.5);
+                } else {
+                    winnings = Math.floor(winnings * 1.24);
+                }
+                if (level + 1 === maxLevels) {
+                    minerStatus.innerHTML = `<span style="color:#f7c873;">${cashEmoji} Max depth! You win $${winnings}!</span>`;
+                    CashcadeWallet.set(CashcadeWallet.get() + winnings);
+                    updateWalletDisplay();
+                    cashoutBtn.style.display = "none";
+                    restartBtn.style.display = "";
+                    gameStarted = false;
+                } else {
+                    minerStatus.innerHTML = `<span style="color:#f7c873;">Safe! Current winnings: $${winnings}</span>`;
+                    level++;
+                }
+                renderTiles();
+                updateWalletDisplay();
+            }
+        }
+
+        cashoutBtn.onclick = function() {
+            if (!gameStarted || lost) return;
+            minerStatus.innerHTML = `<span style="color:#f7c873;">💰 You cashed out with $${winnings}!</span>`;
+            CashcadeWallet.set(CashcadeWallet.get() + winnings);
+            updateWalletDisplay();
+            cashoutBtn.style.display = "none";
+            restartBtn.style.display = "";
+            gameStarted = false;
+            renderTiles();
+        };
+
+        restartBtn.onclick = function() {
+            betControls.style.display = "";
+            tilesContainer.innerHTML = '';
+            minerLevel.textContent = '';
+            minerStatus.textContent = '';
+            cashoutBtn.style.display = "none";
+            restartBtn.style.display = "none";
+            gameStarted = false;
+        };
+
+        betBtn.onclick = startGame;
+    });
+</script>
+</body>
+</html>
