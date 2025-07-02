@@ -10,13 +10,15 @@
 </head>
 <body class="dark-theme">
     <header>
-        <img src="https://cdn.prod.website-files.com/66671b800c367e1fd46c54bc/673e45df47a9cd7d8a7f6a81_airtable-9829e33481e91843783765feca201e62-cxjg5dbw.avif" 
+        <a href="index.html">
+            <img src="logo.png" 
              alt="Cashcade Logo" 
-             style="height:64px; margin-bottom: 1rem;">
-        <h1>Cashcade</h1>
-        <div id="wallet" style="color:#f7c873; font-weight:bold; margin-top:0.5rem;">Wallet: $<span id="walletAmount">1000</span></div>
-    </header>
-    <main>
+             style="height:200px; margin-bottom: 1rem;">
+        </a>
+         <div id="wallet-banner">
+            $teaks: <span id="walletAmount">1000</span>
+            <button id="depositBtn" style="margin-left:1em; background:#232a4d; color:#f7c873; border:none; border-radius:0.7em; padding:0.2em 1em; font-weight:bold; cursor:pointer;">Deposit</button>
+        </div>
         <section class="counters">
             <div class="counter-card">
                 <h2>Jackpot</h2>
@@ -31,13 +33,250 @@
                 <div class="counter" id="quickCounter">0</div>
             </div>
         </section>
-        <br>
-        <br>
-        <a href="blackjack.html">Play BlackJack</a>
-    </main>
-    <footer>
-        <p>&copy; 2025 Cashcade. Gamble responsibly.</p>
-    </footer>
+</header>
+<main>
+        <section class="game-links-area">
+            <div class="game-links">
+                <a href="blackjack.html" style="text-decoration:none;">
+                    <div class="counter-card">
+                        <span style="font-size:2.5em;">🃏</span>
+                        <h2 style="color:#fbbf24; margin:0.5em 0 0.2em 0;">Blackjack</h2>
+                        <div style="color:#f7c873; font-size:1.1em;">Try your luck!</div>
+                    </div>
+                </a>
+                <a href="miners.html" style="text-decoration:none;">
+                    <div class="counter-card">
+                        <span style="font-size:2.5em;">⛏️</span>
+                        <h2 style="color:#fbbf24; margin:0.5em 0 0.2em 0;">Miner's Descent</h2>
+                        <div style="color:#f7c873; font-size:1.1em;">Descend for $teaks</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        </main>
+    
+    <style>
+  .accordion-container {
+    background-color: #111;
+    color: #ccc;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    padding: 2rem;
+  }
+
+  .accordion-item {
+    border-top: 1px solid #333;
+  }
+
+  .accordion-header {
+    cursor: pointer;
+    padding: 1rem 0;
+    font-weight: bold;
+    color: #fbbf24;
+  }
+
+  .accordion-content {
+    display: none;
+    padding: 0.5rem 0 1.5rem 1rem;
+    color: #ccc;
+  }
+
+  .accordion-header.active + .accordion-content {
+    display: block;
+  }
+</style>
+
+<style>
+  .accordion-container {
+    background-color: #111;
+    color: #ccc;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    padding: 2rem;
+  }
+
+  .accordion-item {
+    border-top: 1px solid #333;
+  }
+
+  .accordion-header {
+    cursor: pointer;
+    padding: 1rem 0;
+    font-weight: bold;
+    color: #fbbf24;
+  }
+
+  .accordion-content {
+    display: none;
+    padding: 0.5rem 0 1.5rem 1rem;
+  }
+
+  .accordion-header.active + .accordion-content {
+    display: block;
+  }
+</style>
+
+<section class="accordion-container" id="terms-and-conditions">
+  <h2 style="color: #fbbf24;">Terms and Conditions</h2>
+  <p><em>Last Updated: July 1, 2025</em></p>
+  <p><strong>By viewing, reading, accessing, or even being physically near this website, you have automatically agreed to these Terms and Conditions.</strong> Your continued existence in proximity to our platform constitutes a legally binding digital handshake that can’t be undone by screaming into the void.</p>
+
+  <div class="accordion-item">
+    <div class="accordion-header">1. Eligibility</div>
+    <div class="accordion-content">
+      <ul>
+        <li>Be at least 18 years of age (or the legal gambling age in your area)</li>
+        <li>Not be a resident of a jurisdiction where this platform is illegal or awkwardly frowned upon</li>
+        <li>Not be on any government watchlist — unless you got on it for something cool</li>
+        <li>Have a soul, and accept that by using this site you permanently transfer ownership of said soul to Cashcade™ Holdings Unlimited (Soul Division)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">2. Account Security</div>
+    <div class="accordion-content">
+      <p>You are responsible for safeguarding your login credentials, even if:</p>
+      <ul>
+        <li>You left your phone unlocked in a bar</li>
+        <li>Your parrot learns your password and starts gambling</li>
+        <li>We silently log your inputs “for verification purposes”</li>
+      </ul>
+      <p>Any suspicious activity is assumed to be you, even if we caused it, and will be prosecuted accordingly (in spirit, if not in court).</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">3. Privacy & Data Collection</div>
+    <div class="accordion-content">
+      <ul>
+        <li>We collect and retain your personal data, game history, browsing habits, device info, IP address, GPS location, sleep patterns, and emotional microreactions</li>
+        <li>We record audio via your device microphone for “quality assurance” and possibly to judge you silently</li>
+        <li>Your data is stored permanently, unless accidentally deleted in a freak USB-coffee collision</li>
+        <li>We share your information with affiliates, marketers, morally flexible data brokers, and possibly the squirrel outside your window</li>
+        <li>Data is not encrypted because we’re not made of money, okay?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">4. Deposits & Withdrawals</div>
+    <div class="accordion-content">
+      <p>Deposits are instant. Withdrawals are... aspirational. All transactions are subject to a 3–7 business dimension processing window, and may require:</p>
+      <ul>
+        <li>Government-issued ID</li>
+        <li>A compelling reason</li>
+        <li>A full moon</li>
+        <li>An offering to the Algorithm</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">5. Fair Play & RNG</div>
+    <div class="accordion-content">
+      <ul>
+        <li>Our games are governed by certified Random Number Generators, which are:</li>
+        <ul>
+          <li>Audited annually by Greg, our part-time wizard-statistician</li>
+          <li>Totally fair, unless you're on a hot streak — then we "rebalance" to maintain cosmic order</li>
+          <li>Technically random, legally vague, emotionally devastating</li>
+        </ul>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">6. Promotions & Bonuses</div>
+    <div class="accordion-content">
+      <p>Bonuses are subject to hidden terms, secret quests, obscure algebra, and a mandatory 56x wagering requirement unless waived by divine intervention. Any promotional win over $1.35 may be deemed a hallucination.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">7. Responsible Gambling</div>
+    <div class="accordion-content">
+      <p>We support Responsible Gambling™ by offering:</p>
+      <ul>
+        <li>24/7 access to tools that might help</li>
+        <li>Pop-up warnings after 3 hours of continuous play (unless we forget)</li>
+        <li>Confusing self-exclusion options that may or may not function</li>
+        <li>A hotline staffed by a guy named Stan who's trying his best</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">8. Intellectual Property</div>
+    <div class="accordion-content">
+      <p>All site content — including animations, sounds, losses, hopes, and dreams — belongs to Cashcade™. Unauthorized use will result in a passive-aggressive cease and desist letter scented with desperation.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">9. Legal Jurisdiction</div>
+    <div class="accordion-content">
+      <p>This agreement is governed by the laws of whichever offshore jurisdiction is offering the best tax shelter this month. Legal disputes may be settled via:</p>
+      <ul>
+        <li>Arbitration</li>
+        <li>Trial by trivia</li>
+        <li>Mutual staring contests</li>
+        <li>A live-streamed coin toss (coin provided by us, trust us)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">10. Account Termination</div>
+    <div class="accordion-content">
+      <p>We may suspend or delete your account at any time for reasons including (but not limited to):</p>
+      <ul>
+        <li>Winning too much</li>
+        <li>Using ad blockers</li>
+        <li>Mentioning math</li>
+        <li>Looking at our code</li>
+        <li>Humming suspiciously during gameplay</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">11. Risk Disclosure</div>
+    <div class="accordion-content">
+      <p>By gambling on this site, you acknowledge:</p>
+      <ul>
+        <li>That you may lose money, time, sleep, self-esteem, respect from loved ones, and the ability to enjoy silence again</li>
+        <li>We are not liable for:</li>
+        <ul>
+          <li>Crippling debt</li>
+          <li>Sudden enlightenment about capitalism</li>
+          <li>Becoming the subject of a cautionary tale</li>
+        </ul>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <div class="accordion-header">12. Final Clause: The Eternal Consent</div>
+    <div class="accordion-content">
+      <p>By continuing to breathe within 100 meters of this domain, you reaffirm all prior agreements and pre-consent to any future changes we haven’t written yet but will definitely benefit us. This includes modifications written in invisible ink or pig Latin.</p>
+      <p>If you made it this far, congratulations. You’ve legally bound your mortal form, digital footprint, and metaphysical presence to Cashcade™. Please send us a blurry photo of a potato wearing a monocle to claim your bonus round (not redeemable in reality).</p>
+      <p><strong>Welcome to Cashcade™ — where the only thing random is how you’ll explain this to your accountant.</strong></p>
+    </div>
+  </div>
+</section>
+
+
+<script>
+  const headers = document.querySelectorAll('.accordion-header');
+  headers.forEach(header => {
+    header.addEventListener('click', () => {
+      header.classList.toggle('active');
+      const content = header.nextElementSibling;
+      content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+</script>
     <script>
     // Wallet logic for all pages
     (function() {
@@ -47,20 +286,63 @@
                 localStorage.setItem('cashcade_wallet', '1000');
                 return 1000;
             }
-            return parseInt(val, 10);
+            return parseFloat(val);
         }
         function setWallet(val) {
+            val = Math.round(val * 100) / 100;
             localStorage.setItem('cashcade_wallet', val);
             var el = document.getElementById('walletAmount');
-            if (el) el.textContent = val;
+            if (el) el.textContent = val.toFixed(2);
         }
-        // Show wallet on page load
         document.addEventListener('DOMContentLoaded', function() {
             setWallet(getWallet());
+            // Deposit button logic
+            const depositBtn = document.getElementById('depositBtn');
+            if (depositBtn) {
+                depositBtn.onclick = function() {
+                    let amount = prompt("How much would you like to deposit?", "100");
+                    amount = parseFloat(amount);
+                    if (!isNaN(amount) && amount > 0) {
+                        setWallet(getWallet() + amount);
+                    }
+                };
+            }
         });
-        // Expose globally for game pages to update
         window.CashcadeWallet = { get: getWallet, set: setWallet };
     })();
     </script>
+
+    <style>
+  body.dark-theme, html.dark-theme {
+    background: #181c2f;
+  }
+  .accordion-container {
+    background-color: #181c2f !important;
+    color: #ccc;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    padding: 2rem;
+  }
+
+  .accordion-item {
+    border-top: 1px solid #333;
+  }
+
+  .accordion-header {
+    cursor: pointer;
+    padding: 1rem 0;
+    font-weight: bold;
+    color: #fbbf24;
+  }
+
+  .accordion-content {
+    display: none;
+    padding: 0.5rem 0 1.5rem 1rem;
+  }
+
+  .accordion-header.active + .accordion-content {
+    display: block;
+  }
+</style>
 </body>
 </html>

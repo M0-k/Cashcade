@@ -21,6 +21,7 @@ main {
     display: flex;
     gap: 2rem;
     justify-content: center;
+    margin-bottom: 5rem; /* Add a large gap below the counters */
 }
 .counter-card {
     background: linear-gradient(135deg, #232a4d 60%, #3b2063 100%); /* blue to purple */
@@ -29,6 +30,7 @@ main {
     padding: 2rem 1.5rem;
     text-align: center;
     min-width: 180px;
+    margin-bottom: 3rem;
 }
 .counter-card h2 {
     margin-bottom: 1rem;
@@ -56,4 +58,21 @@ footer {
 }
 h2 {
     color: #f7c873;
+}
+.game-links-area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+.game-links {
+    display: flex;
+    gap: 2.5em;
+    justify-content: center;
+    width: 100%;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    min-width: 0;
 }
